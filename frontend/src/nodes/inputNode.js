@@ -4,44 +4,65 @@ import { useState } from 'react';
 import { BaseNode } from './BaseNode';
 
 export const InputNode = ({ id, data }) => {
-  const [currName, setCurrName] = useState(data?.inputName || id.replace('customInput-', 'input_'));
-  const [inputType, setInputType] = useState(data.inputType || 'Text');
+  //State for input name and type
+  const [name, setName] = useState(data?.inputName || `input_1`);
+  const [type, setType] = useState(data?.inputType || 'Text');
 
+  //handle change for name input
   const handleNameChange = (e) => {
-    setCurrName(e.target.value);
+    setName(e.target.value);
   };
 
+  //handle change for type select
   const handleTypeChange = (e) => {
-    setInputType(e.target.value);
+    setType(e.target.value);
   };
 
-  return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
+  //InputNode: No input handles (its the START), 1 output handle
+  const handles = {
+    outputs: [{ id: `${id}-value` }]
+  }
+
+  //unique content for input node (not shared with other nodes)
+  const nodeContent = (
+    <div className='space-y-3'>
+      {/* Input name field */}
       <div>
-        <span>Input</span>
+        <label className='block text-sm font-medium text-gray-700 mb-1'>
+          Name
+        </label>
+        <input
+          type='text'
+          value={name}
+          onChange={handleNameChange}
+          className='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+          placeholder='e.g., user_input'
+        />
       </div>
+      {/* Type select dropdown */}
       <div>
-        <label>
-          Name:
-          <input 
-            type="text" 
-            value={currName} 
-            onChange={handleNameChange} 
-          />
+        <label className='block text-sm font-medium text-gray-700 mb-1'>
+          Type
         </label>
-        <label>
-          Type:
-          <select value={inputType} onChange={handleTypeChange}>
-            <option value="Text">Text</option>
-            <option value="File">File</option>
-          </select>
-        </label>
+        <select
+          value={type}
+          onChange={handleTypeChange}
+          className='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus: outline-none focus:ring-2 focus:ring-blue-500'
+        >
+          <option value="Text">Text</option>
+          <option value="File">File</option>
+        </select>
       </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-value`}
-      />
     </div>
   );
-}
+
+  //Use BaseNode with InputNode specif content
+  return (
+    <BaseNode
+      id={id}
+      title="Input"          //title shown at top
+      handles={handles}      //1 output handle on right
+      children={nodeContent} //Name + Type fields
+    />
+  );
+};
