@@ -1,47 +1,64 @@
 // outputNode.js
 
-import { useState } from 'react';
-import { Handle, Position } from 'reactflow';
+import { useState } from "react";
+import { BaseNode } from "./BaseNode";
 
 export const OutputNode = ({ id, data }) => {
-  const [currName, setCurrName] = useState(data?.outputName || id.replace('customOutput-', 'output_'));
-  const [outputType, setOutputType] = useState(data.outputType || 'Text');
+  //State for output configuration
+  const [name, setName] = useState(data?.outputName || "output_1");
+  const [type, setType] = useState(data?.outputType || "Text");
 
   const handleNameChange = (e) => {
-    setCurrName(e.target.value);
+    setName(e.target.value);
   };
 
   const handleTypeChange = (e) => {
-    setOutputType(e.target.value);
+    setType(e.target.value);
   };
 
-  return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={`${id}-value`}
-      />
+  const handles = {
+    inputs: [{ id: `${id}-value` }], //Recieves result
+  };
+
+  //Content specific to OutputNode
+  const nodeContent = (
+    <div className="space-y-3">
+      {/* Name input field */}
       <div>
-        <span>Output</span>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Name
+        </label>
+        <input
+          type="text"
+          value={name}
+          onChange={handleNameChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="e.g., final_result"
+        />
       </div>
+      {/* Type select dropdown */}
       <div>
-        <label>
-          Name:
-          <input 
-            type="text" 
-            value={currName} 
-            onChange={handleNameChange} 
-          />
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Type
         </label>
-        <label>
-          Type:
-          <select value={outputType} onChange={handleTypeChange}>
-            <option value="Text">Text</option>
-            <option value="File">Image</option>
-          </select>
-        </label>
+        <select
+          value={type}
+          onChange={handleTypeChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="Text">Text</option>
+          <option value="Image">Image</option>
+        </select>
       </div>
     </div>
   );
-}
+
+  return (
+    <BaseNode
+      id={id}
+      title="Output"
+      handles={handles}
+      children={nodeContent}
+    />
+  );
+};

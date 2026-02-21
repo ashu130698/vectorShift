@@ -1,10 +1,13 @@
 // textNode.js
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BaseNode } from './BaseNode';
 
 export const TextNode = ({ id, data }) => {
-  //state: template text (e.g., "Hello {{name}}, welecome to {{app}}")
+  
+  const textareaRef = useRef(null);
+
+  //state: template text (e.g., "Hello {{name}}, welcome to {{app}}")
   const [text, setText] = useState(data?.text || '{{input}}');
 
   //Function: Extract variables from text using regex
@@ -21,16 +24,19 @@ export const TextNode = ({ id, data }) => {
   const handleTextChange = (e) => {
     //Update text state
     setText(e.target.value);
-    e.target.style.height = 'auto';
-    e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+    //Auto-resize textarea using the ref instead of e.target (consistent approach)
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + 'px';
+    }
   };
 
-  //Initialize textarea on mount
+  //Initialize textarea height on mount
   useEffect(() => {
-    const textarea = document.querySelector(`[data-node-id="${id}"]`);
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+    //textareaRef.current gives us the exact textarea element — no DOM searching needed
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + 'px';
     }
   }, [id]);
 
@@ -52,10 +58,10 @@ export const TextNode = ({ id, data }) => {
 
       {/* Textarea for multiline template */}
       <textarea
-        data-node-id={id}  //used to find this element in useeffect
+        ref={textareaRef}  //connects this element to our useRef (replaces data-node-id)
         value={text}
         onChange={handleTextChange}
-        className='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize none'
+        className='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
         rows="3"  //start from 3 rows then resize 
         placeholder='Use {{variable}} for dynamic content'
       />
@@ -63,7 +69,7 @@ export const TextNode = ({ id, data }) => {
       {/* display detected variables to user */}
       {variables.length > 0 && (
         <div>
-          Varables detected: {variables.join(', ')}
+          Variables detected: {variables.join(', ')}
         </div>
       )}
     </div>

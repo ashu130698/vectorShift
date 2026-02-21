@@ -1,34 +1,32 @@
 // llmNode.js
 
-import { Handle, Position } from 'reactflow';
+import { BaseNode } from './BaseNode';
 
 export const LLMNode = ({ id, data }) => {
 
-  return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={`${id}-system`}
-        style={{top: `${100/3}%`}}
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={`${id}-prompt`}
-        style={{top: `${200/3}%`}}
-      />
-      <div>
-        <span>LLM</span>
+  const handles = {
+    inputs: [
+      { id: `${id}-system` }, //system instruction
+      { id: `${id}-prompt` }, //User prompt
+    ],
+    outputs: [{ id: `${id}-response`}]  //Responce from LLM
+  };
+
+  //Content specific to LLMNode
+  const nodeContent = (
+    <div className='text-center space-y-2'>
+      <div className='text-sm text-gray-600'>
+        <p className='font-medium'>Language Model</p>
+        <p className='text-xs mt-1'>Recieve prompt and return responce</p>
       </div>
-      <div>
-        <span>This is a LLM.</span>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-response`}
-      />
     </div>
+  )
+  return (
+    <BaseNode
+      id={id}
+      title="LLM"
+      handles={handles}
+      children={nodeContent}
+    />
   );
 }

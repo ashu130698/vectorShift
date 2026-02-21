@@ -47,7 +47,7 @@ export const InputNode = ({ id, data }) => {
         <select
           value={type}
           onChange={handleTypeChange}
-          className='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus: outline-none focus:ring-2 focus:ring-blue-500'
+          className='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
         >
           <option value="Text">Text</option>
           <option value="File">File</option>

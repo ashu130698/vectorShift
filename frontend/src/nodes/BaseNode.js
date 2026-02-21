@@ -14,7 +14,7 @@ export const BaseNode = ({
       {handles.inputs &&
         handles.inputs.map((input, idx) => (
           <Handle
-            key={`input - ${idx}`}
+            key={`input-${idx}`}
             type="target" //target = receives input FROM other nodes
             position={Position.Left} //Position = left side of node
             id={input.id} //unique id for this handle (e.g., "text-1-{{variable}}")
