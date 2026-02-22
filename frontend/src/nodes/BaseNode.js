@@ -20,8 +20,8 @@ export const BaseNode = ({
             id={input.id} //unique id for this handle (e.g., "text-1-{{variable}}")
             style={{
               top: `${(idx + 1) * (100 / (handles.inputs.length + 1))}%`, //space handles evenly
+              background: '#3b82f6', //blue — inline style because React Flow's CSS overrides Tailwind classes
             }}
-            className="bg-blue-500"
           />
         ))}
       {/* title section */}
@@ -40,9 +40,9 @@ export const BaseNode = ({
             position={Position.Right} //Position  right side of node
                 id={output.id} //unique ID (e.g., "text-1-output")
                 style={{
-                    top: `${(idx+1)*(100/(handles.outputs.length+1))}%`
+                    top: `${(idx+1)*(100/(handles.outputs.length+1))}%`,
+                    background: '#22c55e', //green — inline style because React Flow's CSS overrides Tailwind classes
                 }}
-                className="bg-green-500"
           />
         ))}
     </div>
