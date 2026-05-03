@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List, Any
 
 app = FastAPI()
 
-# Enable CORS so frontend can call backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -11,22 +12,47 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class Pipeline(BaseModel):
+    nodes: List[Any]
+    edges: List[Any]
+
+def check_is_dag(nodes, edges):
+    graph = {n["id"]: [] for n in nodes}
+    for e in edges:
+        if e["source"] in graph:
+            graph[e["source"]].append(e["target"])
+
+    visited = set()
+    rec_stack = set()
+
+    def has_cycle(node):
+        visited.add(node)
+        rec_stack.add(node)
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                if has_cycle(neighbor):
+                    return True
+            elif neighbor in rec_stack:
+                return True
+        rec_stack.remove(node)
+        return False
+
+    for node in nodes:
+        if node["id"] not in visited:
+            if has_cycle(node["id"]):
+                return False
+    return True
+
 @app.get('/')
 def read_root():
     return {'Ping': 'Pong'}
 
-@app.post('/pipelines/parse')  # Changed to POST
-def parse_pipeline(data: dict):  # Accept JSON dict
-    nodes = data.get('nodes', [])
-    edges = data.get('edges', [])
-    
-    # Simple validation: pipeline received
-    if not nodes or not edges:
-        return {'status': 'error', 'message': 'nodes and edges required'}
-    
+@app.post('/pipelines/parse')
+def parse_pipeline(pipeline: Pipeline):
+    nodes = pipeline.nodes
+    edges = pipeline.edges
     return {
-        'status': 'success',
-        'message': 'Pipeline parsed successfully',
-        'node_count': len(nodes),
-        'edge_count': len(edges)
+        "num_nodes": len(nodes),
+        "num_edges": len(edges),
+        "is_dag": check_is_dag(nodes, edges)
     }
